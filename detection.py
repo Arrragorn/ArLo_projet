@@ -7,7 +7,12 @@ Created on Sat Dec  5 14:40:11 2020
 """
 
 import skimage
+import skimage.io
+
 import numpy as np
+
+import matplotlib.pyplot as plt
+import matplotlib
 
     
 def detect(image1,image2):
@@ -21,13 +26,11 @@ def detect(image1,image2):
 
 
 if (__name__ == "__main__"):
-    X = np.array([[12,7,3],
-    [4 ,5,6],
-    [7 ,8,9]])
-        
-    Y = np.array([[5,8,1],
-    [6,7,3],
-    [4,5,9]])
-    test = detect(X,Y)
+    image1= skimage.io.imread("gandalf-lord-of-the-rings-e1534255368438.jpg")
+    image2 = skimage.io.imread("Inkedgandalf-lord-of-the-rings-e1534255368438_LI (2).jpg")
     
+    plt.imshow(image1)
+    plt.imshow(image2)
+    #test = detect(image1,image2)
     
+    #plt.imshow(test)
