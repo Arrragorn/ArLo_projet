@@ -43,7 +43,7 @@ def detect(image1,image2):
         
     return image_et_thresh
 
-
+#tests pour ce module
 if (__name__ == "__main__"):
     image1 = skimage.io.imread("Inkedgandalf-lord-of-the-rings-e1534255368438_LI (2).jpg")
     image2 = skimage.io.imread("gandalf2.jpg")
