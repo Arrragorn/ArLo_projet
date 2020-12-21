@@ -6,9 +6,7 @@ Created on Fri Dec 11 19:52:34 2020
 @author: antoine
 """
 
-
-import flux_images
-import detection
+import http_detection_pipeline as dp
 
 import tkinter as tk
 import time
@@ -19,28 +17,30 @@ import numpy as np
 
 class movement_detector:
     def __init__(self, parent):
-        #self.img =  ImageTk.PhotoImage(image=Image.fromarray(array))
         self.parent = parent
         self.panel = tk.Label(self.parent)
         self.panel.pack(side = "top")
-        self.detector = detection.detector()
+        self.pipeline = dp.Pipeline()
+        self.queue = self.pipeline.start()
         self.refresh_label()
 
     def refresh_label(self):
-        self.parent.after(1000, self.refresh_label)
-        t_start= time.perf_counter()
-        self.array = flux_images.get_image()
-        t_get = time.perf_counter()
-        self.img = Image.fromarray( self.detector.detect(self.array))
-        t_detect = time.perf_counter()
-        self.imgtk=ImageTk.PhotoImage(image=self.img)
+        new_val = self.queue.get()
+        if(new_val.alert):
+            print('alerte!')
+        self.image = Image.fromarray(new_val.data)
+        self.parent.after(10, self.refresh_label)
+        self.imgtk=ImageTk.PhotoImage(image=self.image)
         self.panel.configure(image=self.imgtk)
-        t_display = time.perf_counter()
-        print('get: ' + str(t_get-t_start) )
-        print('detect: ' + str(t_detect-t_get))
-        print('show: ' + str(t_display-t_detect) )
+
+
 
 if __name__ == "__main__":
+    def on_closing():
+        mouv_detect.pipeline.kill()
+        root.destroy()
+    
     root = tk.Tk()
-    timer = movement_detector(root)
+    root.protocol("WM_DELETE_WINDOW", on_closing)
+    mouv_detect = movement_detector(root)
     root.mainloop()
