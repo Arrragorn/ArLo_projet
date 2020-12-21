@@ -6,13 +6,11 @@ Created on Sat Dec  5 14:40:11 2020
 @author: antoine
 """
 
-import skimage
-import skimage.io
-import skimage.filters
+
 
 import numpy as np
 
-import time 
+import time
 
 import matplotlib.pyplot as plt
 
@@ -23,7 +21,7 @@ class detector:
     def __init__(self):
         self.img = []
         self.img_old = []
-        
+
     def detect(self,img_new):
         self.img_old = self.img
         self.img = img_new
@@ -31,8 +29,8 @@ class detector:
             return detect(self.img_old,self.img)
         else:
             return self.img
-        
-        
+
+
 @jit(nopython=True)
 def quick_median(img_8_bit):
     histogram = np.zeros(256)
@@ -53,13 +51,13 @@ def quick_median(img_8_bit):
             median_value = i
             is_found = True
     return median_value
-        
+
 @jit(nopython=True)
 def rgb_to_wb(img):
     dim = img.shape
     l_dim = dim[0]
     c_dim = dim[1]
-    
+
     wb_img = np.empty((l_dim,c_dim))
     for i in range(l_dim):
         for j in range(c_dim):
@@ -97,14 +95,14 @@ def contour_bool(img_bool):
     contour_img = np.empty((l_dim,c_dim))
     for i in range(1,l_dim - 1):
         for j in range(1,c_dim - 1):
- 
+
             if not img_bool[i][j]:
                 contour_img[i][j] = img_bool[i-1][j-1] or img_bool[i-1][j+1] or \
                 img_bool[i+1][j-1] or img_bool[i+1][j+1]
             else:
                 contour_img[i][j] = False
     return contour_img
-    
+
 
 
 @jit(nopython=True)
@@ -113,7 +111,7 @@ def diff_of_images(img_wb_1,img_wb_2):
 
 
 
-    
+
 
 @jit(nopython=True)
 def display_contour(img,contour):
@@ -125,72 +123,72 @@ def display_contour(img,contour):
     return image_et_contour
 
 def detect(image1,image2):
-    
+
     t_start = time.perf_counter()
-    
-    
+
+
     img_wb_1 = rgb_to_wb(image1)
     img_wb_2 = rgb_to_wb(image2)
-    
+
     t_wb = time.perf_counter()
     print('wb: ' + str(t_wb-t_start))
 
-    
+
     diff_image = diff_of_images(img_wb_1,img_wb_2).astype(np.uint8)
-    
-    t_diff = time.perf_counter() 
+
+    t_diff = time.perf_counter()
     print('diff: ' + str(t_diff-t_wb))
-    
-    
+
+
     #plt.imshow(diff_image)
     #plt.text(0,0,"diff")
     #plt.show()
-    
+
     #avec 4 et 4 excellent resultats mais 420ms...
     filterd_image = median_filter(diff_image,4, 4)
-    
-    t_filt = time.perf_counter() 
+
+    t_filt = time.perf_counter()
     print('filt: ' + str(t_filt-t_diff))
-    
+
     #plt.imshow(filterd_image)
     #plt.text(0,0,"filtered")
     #plt.show()
-    
-    
+
+
     thresh_image = tresh(filterd_image,40)
-    
-    t_tresh = time.perf_counter() 
+
+    t_tresh = time.perf_counter()
     print('tresh: ' + str(t_tresh-t_filt))
-    
+
     contour_image = contour_bool(thresh_image)
-    
-    t_cont = time.perf_counter() 
+
+    t_cont = time.perf_counter()
     print('cont: ' + str(t_cont-t_tresh))
-    
+
     contour_et_image = display_contour(image2,contour_image)
-    
-    t_disp = time.perf_counter() 
+
+    t_disp = time.perf_counter()
     print('disp: ' + str(t_disp-t_cont))
-    
+
     return contour_et_image
 
 #tests pour ce module
 if (__name__ == "__main__"):
-    image1 = skimage.io.imread("Inkedgandalf-lord-of-the-rings-e1534255368438_LI (2).jpg")
-    image2 = skimage.io.imread("gandalf2.jpg")
-    
-    num = 20 
+    image1 = open("Inkedgandalf-lord-of-the-rings-e1534255368438_LI (2).jpg",'r')
+    image2 = open("gandalf2.jpg",'r')
+
+    num = 20
     test = detect(image1, image2)
-    
+
     t_start= time.perf_counter()
-    
-    
+
+
     for i in range(num):
         test = detect(image2, image1)
     t_stop = time.perf_counter()
     t_total = t_stop-t_start
     print(t_total/num)
-    
+
     plt.imshow(test)
     plt.text(0,0,"mouv")
     plt.show()
