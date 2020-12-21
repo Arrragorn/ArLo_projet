@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 from datetime import datetime
 
 
-def mailto(attachedFile):
+def mailto(attachedFileBytes):
       
     dateTimeObj = datetime.now()
     dateStr = dateTimeObj.date().strftime("%b %d %Y ")
@@ -35,17 +35,18 @@ def mailto(attachedFile):
         # Add body to email
         message.attach(MIMEText(body, "plain"))
         
-        filename = attachedFile  # In same directory as script
         
         # Open attachent file in binary mode
-        with open(filename, "rb") as attachment:
+        
             # Add file as application/octet-stream
             # Email client can usually download this automatically as attachment
-            part = MIMEBase("application", "octet-stream")
-            part.set_payload(attachment.read())
+        part = MIMEBase("application", "octet-stream")
+        part.set_payload(attachedFileBytes)
         
         # Encode file in ASCII characters to send by email    
         encoders.encode_base64(part)
+        
+        filename = 'alerte.jpg'
         
         # Add header as key/value pair to attachment part
         part.add_header(
@@ -68,4 +69,6 @@ def mailto(attachedFile):
 #tests pour ce module
 if (__name__ == "__main__"):
     
-    mailto("gandalf2.jpg")
+    file = open("gandalf2.jpg",'rb')
+    
+    mailto(file.read())

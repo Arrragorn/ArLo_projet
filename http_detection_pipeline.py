@@ -77,7 +77,7 @@ class PipeData:
     
             
 class Pipeline:
-    def __init__(self,num_process_filter=3,window_half_size=4,tresh_level=40):
+    def __init__(self,num_process_filter=1,window_half_size=2,tresh_level=40):
         self.num_process_filter  = num_process_filter
         self.queue_pour_detection = Queue()
         self.queue_pour_affichage = Queue()

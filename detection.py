@@ -75,9 +75,14 @@ def median_filter(img,l_half_window,c_half_window):
     filtered_img = np.zeros((l_dim,c_dim))
     for i in range(l_half_window,l_dim -l_half_window):
         for j in range(c_half_window,c_dim -c_half_window):
-            filtered_img[i][j] = \
-            quick_median(img[i-l_half_window:i+l_half_window+1,
-                          j-c_half_window:j+c_half_window+1])
+            if(l_half_window>2):
+                filtered_img[i][j] = \
+                quick_median(img[i-l_half_window:i+l_half_window+1,
+                              j-c_half_window:j+c_half_window+1])
+            else:
+                filtered_img[i][j] = \
+                np.median(img[i-l_half_window:i+l_half_window+1,
+                              j-c_half_window:j+c_half_window+1])
     return filtered_img
 
 @jit(nopython=True)
